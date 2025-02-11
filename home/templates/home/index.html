@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.rtl.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-icon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>نقشه مکان یابی</title>
+</head>
+<body class="home-page">
+<div class="container">
+    <div class="row justify-content-center align-items-center py-5 py-sm-0" style="min-height: 100vh;">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+            <div class="text-center">
+                <h1 class="example display-1 text-white">نقشه مکان یابی</h1>
+
+                <div class="my-2 wow animate_animated animate_fadeInUp" data-wow-duration="2s" data-wow-delay="1.5s">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'account:logout' %}"
+                           class="d-inline-block px-4 py-2 rounded bg-danger text-white mx-1">خروج</a>
+                    {% else %}
+                        <a href="{% url 'account:register' %}"
+                           class="d-inline-block px-4 py-2 rounded bg-white text-dark mx-1">ثبت‌نام</a>
+                        <a href="{% url 'account:login' %}"
+                           class="d-inline-block px-4 py-2 rounded bg-white text-dark mx-1">ورود</a>
+                    {% endif %}
+                </div>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'map:map_view' %}" class="d-inline-block px-4 py-2 rounded bg-white text-dark mx-1">
+                        مشاهده نقشه</a>
+                {% endif %}
+
+                <h2 class="text-white opacity-75 my-4 wow animate_animated animate_fadeInUp" data-wow-duration="2s"
+                    data-wow-delay="1.5s">این وبسایت یک تمرین دانشگاهی می‌باشد</h2>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/jQuery.js' %}"></script>
+<script src="{% static 'js/jquery.liveType.js' %}"></script>
+<script src="{% static 'js/wow.js' %}"></script>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        jQuery('.example').liveType({
+            typeSpeed: 100,
+            pauseEvery: 40,
+            pauseTime: 1500,
+            pauseOnPunctuation: true,
+            punctuationChars: ['.', '.', '?', '!', ':', ';'],
+            cursorEffect: true,
+            cursorSpeed: 1000,
+            cursor: '',
+            cursorClass: 'cursor'
+        });
+    });
+    new WOW().init();
+</script>
+</body>
+</html>

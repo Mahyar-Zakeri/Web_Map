@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نقشه هوشمند</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" defer></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js" defer></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="map-page">
+
+<div class="search-container">
+    <input type="text" id="searchBox" placeholder="نام مکان را وارد کنید">
+    <div class="suggestions" id="suggestions"></div>
+    <button id="searchBtn">🔍</button>
+</div>
+
+<div id="map"></div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("✅ صفحه بارگیری شد!");
+
+        let map = L.map('map').setView([35.6892, 51.3890], 12); // تهران
+
+        let streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        });
+
+        let satelliteLayer = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri'
+        });
+
+        let topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenTopoMap contributors'
+        });
+
+        streetLayer.addTo(map);
+
+        let baseMaps = {
+            "نقشه خیابانی": streetLayer,
+            "نقشه ماهواره‌ای": satelliteLayer,
+            "نقشه توپوگرافی": topoLayer
+        };
+        L.control.layers(baseMaps).addTo(map);
+
+        L.control.scale({
+            position: 'bottomleft',
+            metric: true,
+            imperial: false
+        }).addTo(map);
+
+        let searchInput = document.getElementById("searchBox");
+        let searchButton = document.getElementById("searchBtn");
+        let suggestionsBox = document.getElementById("suggestions");
+
+        function getJSON(url, callback) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    callback(JSON.parse(xhr.responseText));
+                }
+            };
+            xhr.send();
+        }
+
+        searchInput.addEventListener("input", function () {
+            let query = searchInput.value.trim();
+            if (query.length < 2) {
+                suggestionsBox.style.display = "none";
+                return;
+            }
+
+            let url = "https://nominatim.openstreetmap.org/search?format=json&q=" + encodeURIComponent(query);
+            getJSON(url, function (data) {
+                suggestionsBox.innerHTML = "";
+                if (data.length > 0) {
+                    suggestionsBox.style.display = "block";
+                    data.forEach(place => {
+                        let suggestion = document.createElement("div");
+                        suggestion.innerText = place.display_name;
+                        suggestion.onclick = function () {
+                            searchInput.value = place.display_name;
+                            suggestionsBox.style.display = "none";
+                            let lat = parseFloat(place.lat);
+                            let lon = parseFloat(place.lon);
+                            if (!isNaN(lat) && !isNaN(lon)) {
+                                map.setView([lat, lon], 14);
+                                L.marker([lat, lon]).addTo(map)
+                                    .bindPopup(place.display_name)
+                                    .openPopup();
+                            }
+                        };
+                        suggestionsBox.appendChild(suggestion);
+                    });
+                } else {
+                    suggestionsBox.style.display = "none";
+                }
+            });
+        });
+
+        searchButton.addEventListener("click", function () {
+            let query = searchInput.value.trim();
+            if (query === "") {
+                alert("لطفا نام یک مکان را وارد کنید.");
+                return;
+            }
+
+            let url = "https://nominatim.openstreetmap.org/search?format=json&q=" + encodeURIComponent(query);
+            getJSON(url, function (data) {
+                if (data.length > 0) {
+                    let lat = parseFloat(data[0].lat);
+                    let lon = parseFloat(data[0].lon);
+                    if (!isNaN(lat) && !isNaN(lon)) {
+                        map.setView([lat, lon], 14);
+                        L.marker([lat, lon]).addTo(map)
+                            .bindPopup(data[0].display_name)
+                            .openPopup();
+                    }
+                } else {
+                    alert("مکان موردنظر یافت نشد.");
+                }
+            });
+        });
+
+    });
+</script>
+<div class="footer-container">
+    <p> © تمام مالکیت حقوقی این وب سایت متعلق به دانشجو می‌باشد</p>
+    <a href="{% url 'home:home' %}" class="logout-btn">خروج از نقشه</a>
+</div>
+</body>
+</html>
