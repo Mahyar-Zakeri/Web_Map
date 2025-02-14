@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/bootstrap.rtl.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap-icon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-icons.css' %}">
     <link rel="stylesheet" href="{% static 'css/animate.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <title>نقشه مکان یابی</title>
@@ -27,6 +27,8 @@
                            class="d-inline-block px-4 py-2 rounded bg-white text-dark mx-1">ثبت‌نام</a>
                         <a href="{% url 'account:login' %}"
                            class="d-inline-block px-4 py-2 rounded bg-white text-dark mx-1">ورود</a>
+                        <h2 class="text-white opacity-75 my-4 wow animate_animated animate_fadeInUp" data-wow-duration="2s"
+                            data-wow-delay="1.5s">لطفاً جهت مشاهده نقشه وارد حساب کاربری خود شوید</h2>
                     {% endif %}
                 </div>
 
@@ -34,9 +36,6 @@
                     <a href="{% url 'map:map_view' %}" class="d-inline-block px-4 py-2 rounded bg-white text-dark mx-1">
                         مشاهده نقشه</a>
                 {% endif %}
-
-                <h2 class="text-white opacity-75 my-4 wow animate_animated animate_fadeInUp" data-wow-duration="2s"
-                    data-wow-delay="1.5s">این وبسایت یک تمرین دانشگاهی می‌باشد</h2>
 
             </div>
         </div>
